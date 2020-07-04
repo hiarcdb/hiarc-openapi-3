@@ -1,0 +1,78 @@
+openapi: 3.0.3
+info:
+  version: 0.1.0
+  title: Hiarc API
+  license:
+    name: MIT
+  description: |-
+    Welcome to the Hiarc API documentation.
+servers:
+  - description: Localhost
+    url: 'http://localhost:5000'
+security:
+  - AdminApiKeyAuth: []
+  - JWTBearerAuth: []
+paths:
+  '/users':
+    post:
+      summary: Create a user
+      security:
+        - AdminApiKeyAuth: []
+      operationId: createUser
+      tags:
+        - User
+      requestBody:
+        description: 'User information'
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                key:
+                  type: string
+                name:
+                  type: string
+                description:
+                  type: string
+                metadata:
+                  type: object
+      responses:
+        '201':
+          description: A User object
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/User"
+components:
+  schemas:
+    User:
+      required:
+        - key
+      properties:
+        type:
+          type: string
+        key:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        createdBy:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        modifiedAt:
+          type: string
+          format: date-time
+        metadata:
+          type: object
+  securitySchemes:
+    AdminApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-Hiarc-Api-Key
+    JWTBearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
