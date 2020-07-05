@@ -9,13 +9,15 @@ info:
 servers:
   - description: Localhost
     url: 'http://localhost:5000'
+  - description: Production
+    url: 'http://your-production-server:5000'
 security:
   - AdminApiKeyAuth: []
   - JWTBearerAuth: []
 paths:
   '/users':
     post:
-      summary: Create a user
+      summary: Create a User
       security:
         - AdminApiKeyAuth: []
       operationId: createUser
@@ -27,15 +29,7 @@ paths:
         content:
           application/json:
             schema:
-              properties:
-                key:
-                  type: string
-                name:
-                  type: string
-                description:
-                  type: string
-                metadata:
-                  type: object
+              $ref: "#/components/schemas/CreateUser"
       responses:
         '201':
           description: A User object
@@ -43,8 +37,51 @@ paths:
             application/json:
               schema: 
                 $ref: "#/components/schemas/User"
+  '/files':
+    post:
+      summary: Create a File
+      security:
+        - AdminApiKeyAuth: []
+        - JWTBearerAuth: []
+      operationId: createFile
+      tags:
+        - File
+      requestBody:
+        description: 'File information'
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/CreateFile"
+      responses:
+        '201':
+          description: A File object
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/File"
 components:
   schemas:
+    CreateUser:
+      required:
+        - key
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        metadata:
+          type: object
+    CreateFile:
+      type: object
+      properties:
+        request:
+          type: object
+        file:
+          type: string
+          format: binary
     User:
       required:
         - key
@@ -57,6 +94,30 @@ components:
           type: string
         description:
           type: string
+        createdBy:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        modifiedAt:
+          type: string
+          format: date-time
+        metadata:
+          type: object
+    File:
+      required:
+        - key
+      properties:
+        type:
+          type: string
+        key:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        versionCount:
+          type: number
         createdBy:
           type: string
         createdAt:
