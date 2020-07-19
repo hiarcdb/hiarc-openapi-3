@@ -46,6 +46,11 @@ paths:
       operationId: createFile
       tags:
         - File
+      parameters:
+        - in: header
+          name: X-Hiarc-User-Key
+          schema:
+            type: string
       requestBody:
         description: 'File information'
         required: true
@@ -60,6 +65,35 @@ paths:
             application/json:
               schema: 
                 $ref: "#/components/schemas/File"
+  '/files/{key}/download':
+    get:
+      summary: Download a File
+      security:
+        - AdminApiKeyAuth: []
+        - JWTBearerAuth: []
+      operationId: downloadFile
+      tags:
+        - File
+      parameters:
+        - name: X-Hiarc-User-Key
+          in: header
+          description: 'Optional key of user to impersonate'
+          schema:
+            type: string
+        - name: key
+          in: path
+          required: true
+          description: 'Key of file to download'
+          schema:
+            type: string 
+      responses:
+        '200':
+          description: A binary file
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
 components:
   schemas:
     EntityBase:
