@@ -7,10 +7,8 @@ info:
   description: |-
     Welcome to the Hiarc API documentation.
 servers:
-  - description: Localhost
+  - description: HiarcServer
     url: 'http://localhost:5000'
-  - description: Production
-    url: 'http://your-production-server:5000'
 security:
   - AdminApiKeyAuth: []
   - JWTBearerAuth: []
@@ -32,6 +30,28 @@ paths:
               $ref: "#/components/schemas/CreateUser"
       responses:
         '201':
+          description: A User object
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/User"
+  '/users/{key}':
+    get:
+      summary: Get a User
+      security:
+        - AdminApiKeyAuth: []
+      operationId: getUser
+      tags:
+        - User
+      parameters:
+        - name: key
+          in: path
+          required: true
+          description: 'Key of user to get'
+          schema:
+            type: string 
+      responses:
+        '200':
           description: A User object
           content:
             application/json:
