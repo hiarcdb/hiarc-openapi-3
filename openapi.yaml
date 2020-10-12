@@ -8,12 +8,12 @@ info:
     Welcome to the Hiarc API documentation.
 servers:
   - description: HiarcServer
-    url: 'http://localhost:5000'
+    url: "http://localhost:5000"
 security:
   - AdminApiKeyAuth: []
   - JWTBearerAuth: []
 paths:
-  '/users':
+  "/users":
     post:
       summary: Create a User
       security:
@@ -22,20 +22,34 @@ paths:
       tags:
         - User
       requestBody:
-        description: 'User information'
+        description: "User information"
         required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/CreateUser"
       responses:
-        '201':
+        "201":
           description: A User object
           content:
             application/json:
-              schema: 
+              schema:
                 $ref: "#/components/schemas/User"
-  '/users/{key}':
+    get:
+      summary: Get all Users
+      security:
+        - AdminApiKeyAuth: []
+      operationId: getAllUsers
+      tags:
+        - User
+      responses:
+        "200":
+          description: A list of User object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListOfUsers"
+  "/users/{key}":
     get:
       summary: Get a User
       security:
@@ -47,17 +61,144 @@ paths:
         - name: key
           in: path
           required: true
-          description: 'Key of user to get'
+          description: "Key of user to get"
           schema:
-            type: string 
+            type: string
       responses:
-        '200':
+        "200":
           description: A User object
           content:
             application/json:
-              schema: 
+              schema:
                 $ref: "#/components/schemas/User"
-  '/files':
+    put:
+      summary: Update a User
+      security:
+        - AdminApiKeyAuth: []
+      operationId: updateUser
+      tags:
+        - User
+      parameters:
+        - name: key
+          in: path
+          required: true
+          description: "Key of user to get"
+          schema:
+            type: string
+      requestBody:
+        description: "User information"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUser"
+      responses:
+        "200":
+          description: A User object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+    delete:
+      summary: Delete a User
+      security:
+        - AdminApiKeyAuth: []
+      operationId: deleteUser
+      tags:
+        - User
+      parameters:
+        - name: key
+          in: path
+          required: true
+          description: "Key of user to delete"
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Empty response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Empty"
+  "/users/current":
+    get:
+      summary: Get the current User
+      security:
+        - AdminApiKeyAuth: []
+        - JWTBearerAuth: []
+      operationId: getCurrentUser
+      tags:
+        - User
+      responses:
+        "200":
+          description: A User object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+  "/users/find":
+    post:
+      summary: Create a User
+      security:
+        - AdminApiKeyAuth: []
+      operationId: findUser
+      tags:
+        - User
+      requestBody:
+        description: "User query"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FindUserRequest"
+      responses:
+        "200":
+          description: A list of User objects
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListOfUsers"
+  "/users/{key}/groups":
+    get:
+      summary: Get Groups for a User
+      security:
+        - AdminApiKeyAuth: []
+      operationId: getGroupsForUser
+      tags:
+        - User
+        - Groups
+      parameters:
+        - name: key
+          in: path
+          required: true
+          description: "Key of user"
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A list of Group objects
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListOfGroups"
+  "/users/current/groups":
+    get:
+      summary: Get the Groups for the current User
+      security:
+        - AdminApiKeyAuth: []
+        - JWTBearerAuth: []
+      operationId: getGroupsForCurrentUser
+      tags:
+        - User
+        - Group
+      responses:
+        "200":
+          description: A list of Group object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListOfGroups"
+  "/files":
     post:
       summary: Create a File
       security:
@@ -72,20 +213,20 @@ paths:
           schema:
             type: string
       requestBody:
-        description: 'File information'
+        description: "File information"
         required: true
         content:
           multipart/form-data:
             schema:
               $ref: "#/components/schemas/CreateFile"
       responses:
-        '201':
+        "201":
           description: A File object
           content:
             application/json:
-              schema: 
+              schema:
                 $ref: "#/components/schemas/File"
-  '/files/{key}/download':
+  "/files/{key}/download":
     get:
       summary: Download a File
       security:
@@ -97,17 +238,17 @@ paths:
       parameters:
         - name: X-Hiarc-User-Key
           in: header
-          description: 'Optional key of user to impersonate'
+          description: "Optional key of user to impersonate"
           schema:
             type: string
         - name: key
           in: path
           required: true
-          description: 'Key of file to download'
+          description: "Key of file to download"
           schema:
-            type: string 
+            type: string
       responses:
-        '200':
+        "200":
           description: A binary file
           content:
             application/octet-stream:
@@ -116,7 +257,39 @@ paths:
                 format: binary
 components:
   schemas:
-    EntityBase:
+    Empty:
+      type: "object"
+      title: "Empty Schema"
+    # EntityBase:
+    #   type: object
+    #   required:
+    #     - key
+    #   properties:
+    #     key:
+    #       type: string
+    #     name:
+    #       type: string
+    #     description:
+    #       type: string
+    #     metadata:
+    #       type: object
+    # EntityResponseBase:
+    #   allOf:
+    #     - $ref: "#/components/schemas/EntityBase"
+    #     - type: object
+    #       properties:
+    #         type:
+    #           type: string
+    #         createdBy:
+    #           type: string
+    #         createdAt:
+    #           type: string
+    #           format: date-time
+    #         modifiedAt:
+    #           type: string
+    #           format: date-time
+    CreateUser:
+      type: object
       required:
         - key
       properties:
@@ -128,47 +301,118 @@ components:
           type: string
         metadata:
           type: object
-    EntityResponseBase:
-      allOf:
-        - $ref: '#/components/schemas/EntityBase'
-        - type: object
-          properties:
-            type:
-              type: string
-            createdBy:
-              type: string
-            createdAt:
-              type: string
-              format: date-time
-            modifiedAt:
-              type: string
-              format: date-time
-    CreateUser:
-      allOf:
-        - $ref: '#/components/schemas/EntityBase'
+    UpdateUser:
+      type: object
+      required:
+        - key
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        metadata:
+          type: object
+    FindUserRequest:
+      type: array
+      items:
+        $ref: "#/components/schemas/Query"
+    Query:
+      type: object
+      additionalProperties:
+        type: object
+    ListOfUsers:
+      type: array
+      items:
+        $ref: "#/components/schemas/User"
     CreateFile:
       type: object
+      required:
+        - key
       properties:
-        request:
-          allOf:
-            - $ref: '#/components/schemas/EntityBase'
-            - type: object
-              properties:
-                StorageService:
-                  type: string
+        key:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        metadata:
+          type: object
+        StorageService:
+          type: string
         file:
           type: string
           format: binary
     User:
-      allOf:
-        - $ref: '#/components/schemas/EntityResponseBase'
+      type: object
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        metadata:
+          type: object
+        type:
+          type: string
+        createdBy:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        modifiedAt:
+          type: string
+          format: date-time
+    Group:
+      type: object
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        metadata:
+          type: object
+        type:
+          type: string
+        createdBy:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        modifiedAt:
+          type: string
+          format: date-time
+    ListOfGroups:
+      type: array
+      items:
+        $ref: "#/components/schemas/Group"
     File:
-      allOf:
-        - $ref: '#/components/schemas/EntityResponseBase'
-        - type: object
-          properties:
-            versionCount:
-              type: number
+      type: object
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        metadata:
+          type: object
+        type:
+          type: string
+        createdBy:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        modifiedAt:
+          type: string
+          format: date-time
+        versionCount:
+          type: number
   securitySchemes:
     AdminApiKeyAuth:
       type: apiKey
