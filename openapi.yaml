@@ -44,7 +44,7 @@ paths:
         - User
       responses:
         "200":
-          description: A list of User object
+          description: A list of User objects
           content:
             application/json:
               schema:
@@ -226,6 +226,307 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/File"
+  "/files/{key}":
+    get:
+      summary: Get a File's Info
+      security:
+        - AdminApiKeyAuth: []
+        - JWTBearerAuth: []
+      operationId: getFile
+      tags:
+        - File
+      parameters:
+        - name: X-Hiarc-User-Key
+          in: header
+          description: "Optional key of user to impersonate"
+          schema:
+            type: string
+        - name: key
+          in: path
+          required: true
+          description: "Key of file to get info"
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A File object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/File"
+    put:
+      summary: Update a File
+      security:
+        - AdminApiKeyAuth: []
+      operationId: updateFile
+      tags:
+        - File
+      parameters:
+        - name: key
+          in: path
+          required: true
+          description: "Key of file to update"
+          schema:
+            type: string
+      requestBody:
+        description: "File information"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateFile"
+      responses:
+        "200":
+          description: A File object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/File"
+    delete:
+      summary: Delete a File
+      security:
+        - AdminApiKeyAuth: []
+        - JWTBearerAuth: []
+      operationId: deleteFile
+      tags:
+        - File
+      parameters:
+        - name: X-Hiarc-User-Key
+          in: header
+          description: "Optional key of user to impersonate"
+          schema:
+            type: string
+        - name: key
+          in: path
+          required: true
+          description: "Key of file to delete"
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Empty response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Empty"
+  "/files/{key}/attach":
+    put:
+      summary: Attach to an existing File
+      security:
+        - AdminApiKeyAuth: []
+        - JWTBearerAuth: []
+      operationId: attachToExisitingFile
+      tags:
+        - File
+      parameters:
+        - in: header
+          name: X-Hiarc-User-Key
+          schema:
+            type: string
+        - name: key
+          in: path
+          required: true
+          description: "Key of file to attach to"
+          schema:
+            type: string
+      requestBody:
+        description: "File information"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AttachToFile"
+      responses:
+        "201":
+          description: A File object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/File"
+  "/files/{key}/copy":
+    put:
+      summary: Copy a File
+      security:
+        - AdminApiKeyAuth: []
+        - JWTBearerAuth: []
+      operationId: copyFile
+      tags:
+        - File
+      parameters:
+        - in: header
+          name: X-Hiarc-User-Key
+          schema:
+            type: string
+        - name: key
+          in: path
+          required: true
+          description: "Key of file to attach to"
+          schema:
+            type: string
+      requestBody:
+        description: "File information"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CopyFile"
+      responses:
+        "201":
+          description: A File object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/File"
+  "/files/{key}/versions":
+    get:
+      summary: Get a list of File Versions
+      security:
+        - AdminApiKeyAuth: []
+        - JWTBearerAuth: []
+      operationId: getVersions
+      tags:
+        - File
+      parameters:
+        - name: X-Hiarc-User-Key
+          in: header
+          description: "Optional key of user to impersonate"
+          schema:
+            type: string
+        - name: key
+          in: path
+          required: true
+          description: "Key of file to get all versions"
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A list of File Versions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListOfFileVersions"
+    put:
+      summary: Add a new File Version
+      security:
+        - AdminApiKeyAuth: []
+        - JWTBearerAuth: []
+      operationId: addVersion
+      tags:
+        - File
+      parameters:
+        - in: header
+          name: X-Hiarc-User-Key
+          schema:
+            type: string
+        - name: key
+          in: path
+          required: true
+          description: "Key of file to add a version"
+          schema:
+            type: string
+      requestBody:
+        description: "File information"
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/AddFileVersion"
+      responses:
+        "201":
+          description: A File object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/File"
+  "/files/{key}/retentionpolicies":
+    get:
+      summary: Get a list of Retention Policies on a File
+      security:
+        - AdminApiKeyAuth: []
+        - JWTBearerAuth: []
+      operationId: getRetentionPolicies
+      tags:
+        - File
+      parameters:
+        - name: X-Hiarc-User-Key
+          in: header
+          description: "Optional key of user to impersonate"
+          schema:
+            type: string
+        - name: key
+          in: path
+          required: true
+          description: "Key of file to get all retention policies"
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A list of Retention Policies
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListOfRetentionPolicies"
+    put:
+      summary: Add a Retention Policy to a File
+      security:
+        - AdminApiKeyAuth: []
+        - JWTBearerAuth: []
+      operationId: addRetentionPolicyToFile
+      tags:
+        - File
+      parameters:
+        - in: header
+          name: X-Hiarc-User-Key
+          schema:
+            type: string
+        - name: key
+          in: path
+          required: true
+          description: "Key of file"
+          schema:
+            type: string
+      requestBody:
+        description: "Retention Policy information"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddRetentionPolicyToFileRequest"
+      responses:
+        "200":
+          description: Empty response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Empty"
+  "/files/{key}/collections":
+    get:
+      summary: Get a list of Collections for a File
+      security:
+        - AdminApiKeyAuth: []
+        - JWTBearerAuth: []
+      operationId: getCollectionsForFile
+      tags:
+        - File
+      parameters:
+        - name: X-Hiarc-User-Key
+          in: header
+          description: "Optional key of user to impersonate"
+          schema:
+            type: string
+        - name: key
+          in: path
+          required: true
+          description: "Key of file to get all collections"
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A list of Collections
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListOfCollections"
   "/files/{key}/download":
     get:
       summary: Download a File
@@ -255,6 +556,171 @@ paths:
               schema:
                 type: string
                 format: binary
+  "/files/directuploadurl":
+    post:
+      summary: Create a direct upload url to a storage service
+      security:
+        - AdminApiKeyAuth: []
+      operationId: createDirectUploadUrl
+      parameters:
+        - name: expiresInSeconds
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: When access to the url should expire
+      tags:
+        - File
+      requestBody:
+        description: "Storage service information"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDirectUploadUrl"
+      responses:
+        "200":
+          description: A direct upload object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DirectUploadUrl"
+  "/files/{key}/directdownloadurl":
+    get:
+      summary: Get a direct download URL to a File
+      security:
+        - AdminApiKeyAuth: []
+        - JWTBearerAuth: []
+      operationId: getDirectDownloadUrl
+      tags:
+        - File
+      parameters:
+        - name: X-Hiarc-User-Key
+          in: header
+          description: "Optional key of user to impersonate"
+          schema:
+            type: string
+        - name: key
+          in: path
+          required: true
+          description: "Key of file to get download URL"
+          schema:
+            type: string
+        - name: expiresInSeconds
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: When access to the url should expire
+      responses:
+        "200":
+          description: A direct download URL object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DirectDownloadUrl"
+  "/files/{key}/users":
+    put:
+      summary: Give a user access to a File
+      security:
+        - AdminApiKeyAuth: []
+        - JWTBearerAuth: []
+      operationId: addUserToFile
+      tags:
+        - File
+      parameters:
+        - in: header
+          name: X-Hiarc-User-Key
+          schema:
+            type: string
+        - name: key
+          in: path
+          required: true
+          description: "Key of file"
+          schema:
+            type: string
+      requestBody:
+        description: "User information"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddUserToFileRequest"
+      responses:
+        "200":
+          description: Empty response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Empty"
+  "/files/{key}/groups":
+    put:
+      summary: Give a group access to a File
+      security:
+        - AdminApiKeyAuth: []
+        - JWTBearerAuth: []
+      operationId: addGroupToFile
+      tags:
+        - File
+      parameters:
+        - in: header
+          name: X-Hiarc-User-Key
+          schema:
+            type: string
+        - name: key
+          in: path
+          required: true
+          description: "Key of file"
+          schema:
+            type: string
+      requestBody:
+        description: "Group information"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddGroupToFileRequest"
+      responses:
+        "200":
+          description: Empty response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Empty"
+  "/files/{key}/classifications":
+    put:
+      summary: Add a Classification to a File
+      security:
+        - AdminApiKeyAuth: []
+        - JWTBearerAuth: []
+      operationId: addClassificationToFile
+      tags:
+        - File
+      parameters:
+        - in: header
+          name: X-Hiarc-User-Key
+          schema:
+            type: string
+        - name: key
+          in: path
+          required: true
+          description: "Key of file"
+          schema:
+            type: string
+      requestBody:
+        description: "Classification information"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddClassificationToFileRequest"
+      responses:
+        "200":
+          description: Empty response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Empty"
 components:
   schemas:
     Empty:
@@ -301,6 +767,38 @@ components:
           type: string
         metadata:
           type: object
+    AddUserToFileRequest:
+      type: object
+      required:
+        - userKey
+      properties:
+        userKey:
+          type: string
+        accessLevel:
+          type: string
+    AddGroupToFileRequest:
+      type: object
+      required:
+        - groupKey
+      properties:
+        groupKey:
+          type: string
+        accessLevel:
+          type: string
+    AddRetentionPolicyToFileRequest:
+      type: object
+      required:
+        - retentionPolicyKey
+      properties:
+        retentionPolicyKey:
+          type: string
+    AddClassificationToFileRequest:
+      type: object
+      required:
+        - classificationKey
+      properties:
+        classificationKey:
+          type: string
     UpdateUser:
       type: object
       required:
@@ -339,6 +837,18 @@ components:
           type: string
         metadata:
           type: object
+        StorageService:
+          type: string
+        file:
+          type: string
+          format: binary
+    AddFileVersion:
+      type: object
+      required:
+        - key
+      properties:
+        key:
+          type: string
         StorageService:
           type: string
         file:
@@ -413,6 +923,130 @@ components:
           format: date-time
         versionCount:
           type: number
+    AttachToFile:
+      type: object
+      properties:
+        name:
+          type: string
+        storageService:
+          type: string
+        storageId:
+          type: string
+    CopyFile:
+      type: object
+      properties:
+        key:
+          type: string
+        storageService:
+          type: string
+    UpdateFile:
+      type: object
+      required:
+        - key
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        metadata:
+          type: object
+    FileVersion:
+      type: object
+      properties:
+        createdBy:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        storageService:
+          type: string
+        storageId:
+          type: string
+    ListOfFileVersions:
+      type: array
+      items:
+        $ref: "#/components/schemas/FileVersion"
+    RetentionPolicy:
+      type: object
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        metadata:
+          type: object
+        type:
+          type: string
+        createdBy:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        modifiedAt:
+          type: string
+          format: date-time
+        seconds:
+          type: integer
+    ListOfRetentionPolicies:
+      type: array
+      items:
+        $ref: "#/components/schemas/RetentionPolicy"
+    Collection:
+      type: object
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        metadata:
+          type: object
+        type:
+          type: string
+        createdBy:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        modifiedAt:
+          type: string
+          format: date-time
+    ListOfCollections:
+      type: array
+      items:
+        $ref: "#/components/schemas/Collection"
+    DirectUploadUrl:
+      type: object
+      properties:
+        directUploadUrl:
+          type: string
+        storageId:
+          type: string
+        storageService:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
+    DirectDownloadUrl:
+      type: object
+      properties:
+        key:
+          type: string
+        directDownloadUrl:
+          type: string
+        expiresAt:
+          type: string
+          format: date-time
+    CreateDirectUploadUrl:
+      type: object
+      properties:
+        storageService:
+          type: string
   securitySchemes:
     AdminApiKeyAuth:
       type: apiKey
