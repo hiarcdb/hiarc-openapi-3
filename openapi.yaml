@@ -1153,6 +1153,135 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Empty"
+  "/classifications/{key}":
+    get:
+      summary: Get a Classification's Info
+      security:
+        - AdminApiKeyAuth: []
+      operationId: getClassification
+      tags:
+        - Classification
+      parameters:
+        - name: key
+          in: path
+          required: true
+          description: "Key of Classification to get info"
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A Classification object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Classification"
+    put:
+      summary: Update a Classification
+      security:
+        - AdminApiKeyAuth: []
+      operationId: updateClassification
+      tags:
+        - Classification
+      parameters:
+        - name: key
+          in: path
+          required: true
+          description: "Key of Classification to get info"
+          schema:
+            type: string
+      requestBody:
+        description: "Classification information"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateClassification"
+      responses:
+        "200":
+          description: A Classification object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Classification"
+    delete:
+      summary: Delete a Classification
+      security:
+        - AdminApiKeyAuth: []
+      operationId: deleteClassification
+      tags:
+        - Classification
+      parameters:
+        - name: key
+          in: path
+          required: true
+          description: "Key of Classification to delete"
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Empty response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Empty"
+  "/classifications":
+    get:
+      summary: Get all Classifications
+      security:
+        - AdminApiKeyAuth: []
+      operationId: getAllClassifications
+      tags:
+        - Classification
+      responses:
+        "200":
+          description: A list of Classification objects
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListOfClassifications"
+    post:
+      summary: Create a Classification
+      security:
+        - AdminApiKeyAuth: []
+      operationId: createClassification
+      tags:
+        - Classification
+      requestBody:
+        description: "Classification information"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateClassification"
+      responses:
+        "201":
+          description: A Classification object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Classification"
+  "/classifications/find":
+    post:
+      summary: Find a Classification
+      security:
+        - AdminApiKeyAuth: []
+      operationId: findClassification
+      tags:
+        - Classification
+      requestBody:
+        description: "Classification query"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FindClassificationRequest"
+      responses:
+        "200":
+          description: A list of Classification objects
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListOfClassifications"
 components:
   schemas:
     Empty:
@@ -1198,9 +1327,9 @@ components:
     UserCredentials:
       type: object
       properties:
-        userKey: 
+        userKey:
           type: string
-        bearerToken: 
+        bearerToken:
           type: string
         createdAt:
           type: string
@@ -1222,6 +1351,19 @@ components:
         metadata:
           type: object
     CreateCollection:
+      type: object
+      required:
+        - key
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        metadata:
+          type: object
+    CreateClassification:
       type: object
       required:
         - key
@@ -1317,11 +1459,28 @@ components:
           type: string
         metadata:
           type: object
+    UpdateClassification:
+      type: object
+      required:
+        - key
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        metadata:
+          type: object
     FindUserRequest:
       type: array
       items:
         $ref: "#/components/schemas/Query"
     FindCollectionRequest:
+      type: array
+      items:
+        $ref: "#/components/schemas/Query"
+    FindClassificationRequest:
       type: array
       items:
         $ref: "#/components/schemas/Query"
@@ -1384,6 +1543,27 @@ components:
         modifiedAt:
           type: string
           format: date-time
+    Classification:
+      type: object
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        metadata:
+          type: object
+        type:
+          type: string
+        createdBy:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        modifiedAt:
+          type: string
+          format: date-time
     Group:
       type: object
       properties:
@@ -1409,6 +1589,10 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/Group"
+    ListOfClassifications:
+      type: array
+      items:
+        $ref: "#/components/schemas/Classification"
     File:
       type: object
       properties:
@@ -1539,7 +1723,7 @@ components:
         files:
           type: array
           items:
-              $ref: "#/components/schemas/File"
+            $ref: "#/components/schemas/File"
     ListOfCollections:
       type: array
       items:
