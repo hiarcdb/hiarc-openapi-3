@@ -138,7 +138,7 @@ paths:
                 $ref: "#/components/schemas/User"
   "/users/find":
     post:
-      summary: Create a User
+      summary: Find a User
       security:
         - AdminApiKeyAuth: []
       operationId: findUser
@@ -721,6 +721,438 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Empty"
+  "/tokens/user":
+    post:
+      summary: Create a Token for a User
+      security:
+        - AdminApiKeyAuth: []
+      operationId: createUserToken
+      tags:
+        - Token
+      requestBody:
+        description: "User information"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserToken"
+      responses:
+        "200":
+          description: A User Token object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserCredentials"
+  "/collections/{key}":
+    get:
+      summary: Get a Collection's Info
+      security:
+        - AdminApiKeyAuth: []
+        - JWTBearerAuth: []
+      operationId: getCollection
+      tags:
+        - Collection
+      parameters:
+        - name: X-Hiarc-User-Key
+          in: header
+          description: "Optional key of user to impersonate"
+          schema:
+            type: string
+        - name: key
+          in: path
+          required: true
+          description: "Key of collection to get info"
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A Collection object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Collection"
+    put:
+      summary: Update a Collection
+      security:
+        - AdminApiKeyAuth: []
+        - JWTBearerAuth: []
+      operationId: updateCollection
+      tags:
+        - Collection
+      parameters:
+        - name: X-Hiarc-User-Key
+          in: header
+          description: "Optional key of user to impersonate"
+          schema:
+            type: string
+        - name: key
+          in: path
+          required: true
+          description: "Key of collection to get info"
+          schema:
+            type: string
+      requestBody:
+        description: "Collection information"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateCollection"
+      responses:
+        "200":
+          description: A Collection object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Collection"
+    delete:
+      summary: Delete a Collection
+      security:
+        - AdminApiKeyAuth: []
+        - JWTBearerAuth: []
+      operationId: deleteCollection
+      tags:
+        - Collection
+      parameters:
+        - name: X-Hiarc-User-Key
+          in: header
+          description: "Optional key of user to impersonate"
+          schema:
+            type: string
+        - name: key
+          in: path
+          required: true
+          description: "Key of Collection to delete"
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Empty response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Empty"
+  "/collections":
+    post:
+      summary: Create a Collection
+      security:
+        - AdminApiKeyAuth: []
+      operationId: createCollection
+      tags:
+        - Collection
+      requestBody:
+        description: "Collection information"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateCollection"
+      responses:
+        "201":
+          description: A Collection object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Collection"
+    get:
+      summary: Get all Collections
+      security:
+        - AdminApiKeyAuth: []
+      operationId: getAllCollection
+      tags:
+        - Collection
+      responses:
+        "200":
+          description: A list of Collection objects
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListOfCollections"
+  "/collections/{key}/files":
+    get:
+      summary: Get a Collection's Files
+      security:
+        - AdminApiKeyAuth: []
+        - JWTBearerAuth: []
+      operationId: getCollectionFiles
+      tags:
+        - Collection
+      parameters:
+        - name: X-Hiarc-User-Key
+          in: header
+          description: "Optional key of user to impersonate"
+          schema:
+            type: string
+        - name: key
+          in: path
+          required: true
+          description: "Key of collection"
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A List of File objects
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListOfFiles"
+    put:
+      summary: Add a File to a Collection
+      security:
+        - AdminApiKeyAuth: []
+        - JWTBearerAuth: []
+      operationId: addFileToCollection
+      tags:
+        - Collection
+      parameters:
+        - name: X-Hiarc-User-Key
+          in: header
+          description: "Optional key of user to impersonate"
+          schema:
+            type: string
+        - name: key
+          in: path
+          required: true
+          description: "Key of Collection"
+          schema:
+            type: string
+      requestBody:
+        description: "Add File request"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddFileToCollectionRequest"
+      responses:
+        "200":
+          description: Empty response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Empty"
+  "/collections/{key}/children":
+    get:
+      summary: Get a Collection's child Collections
+      security:
+        - AdminApiKeyAuth: []
+        - JWTBearerAuth: []
+      operationId: getCollectionChildren
+      tags:
+        - Collection
+      parameters:
+        - name: X-Hiarc-User-Key
+          in: header
+          description: "Optional key of user to impersonate"
+          schema:
+            type: string
+        - name: key
+          in: path
+          required: true
+          description: "Key of collection"
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A List of Collection objects
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListOfCollections"
+  "/collections/{key}/items":
+    get:
+      summary: Get a Collection's child items, including Collections and Files
+      security:
+        - AdminApiKeyAuth: []
+        - JWTBearerAuth: []
+      operationId: getCollectionItems
+      tags:
+        - Collection
+      parameters:
+        - name: X-Hiarc-User-Key
+          in: header
+          description: "Optional key of user to impersonate"
+          schema:
+            type: string
+        - name: key
+          in: path
+          required: true
+          description: "Key of collection"
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Collection Item objects
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CollectionItems"
+  "/collections/find":
+    post:
+      summary: Find a Collection
+      security:
+        - AdminApiKeyAuth: []
+        - JWTBearerAuth: []
+      operationId: findCollection
+      tags:
+        - Collection
+      parameters:
+        - name: X-Hiarc-User-Key
+          in: header
+          description: "Optional key of user to impersonate"
+          schema:
+            type: string
+      requestBody:
+        description: "Collection query"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FindCollectionRequest"
+      responses:
+        "200":
+          description: A list of Collection objects
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListOfCollections"
+  "/collections/{key}/files/{fileKey}":
+    delete:
+      summary: Remove a File from a Collection
+      security:
+        - AdminApiKeyAuth: []
+        - JWTBearerAuth: []
+      operationId: removeFileFromCollection
+      tags:
+        - Collection
+      parameters:
+        - name: X-Hiarc-User-Key
+          in: header
+          description: "Optional key of user to impersonate"
+          schema:
+            type: string
+        - name: key
+          in: path
+          required: true
+          description: "Key of Collection"
+          schema:
+            type: string
+        - name: fileKey
+          in: path
+          required: true
+          description: "Key of File to remove from Collection"
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Empty response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Empty"
+  "/collections/{key}/children/{childKey}":
+    put:
+      summary: Add a child item to a Collection
+      security:
+        - AdminApiKeyAuth: []
+        - JWTBearerAuth: []
+      operationId: addChildToCollection
+      tags:
+        - Collection
+      parameters:
+        - name: X-Hiarc-User-Key
+          in: header
+          description: "Optional key of user to impersonate"
+          schema:
+            type: string
+        - name: key
+          in: path
+          required: true
+          description: "Key of Collection"
+          schema:
+            type: string
+        - name: childKey
+          in: path
+          required: true
+          description: "Key of item to add as child to Collection"
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Empty response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Empty"
+  "/collections/{key}/users":
+    put:
+      summary: Add a User to a Collection
+      security:
+        - AdminApiKeyAuth: []
+        - JWTBearerAuth: []
+      operationId: addUserToCollection
+      tags:
+        - Collection
+      parameters:
+        - name: X-Hiarc-User-Key
+          in: header
+          description: "Optional key of user to impersonate"
+          schema:
+            type: string
+        - name: key
+          in: path
+          required: true
+          description: "Key of Collection"
+          schema:
+            type: string
+      requestBody:
+        description: "Add User request"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddUserToCollectionRequest"
+      responses:
+        "200":
+          description: Empty response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Empty"
+  "/collections/{key}/groups":
+    put:
+      summary: Add a Group to a Collection
+      security:
+        - AdminApiKeyAuth: []
+        - JWTBearerAuth: []
+      operationId: addGroupToCollection
+      tags:
+        - Collection
+      parameters:
+        - name: X-Hiarc-User-Key
+          in: header
+          description: "Optional key of user to impersonate"
+          schema:
+            type: string
+        - name: key
+          in: path
+          required: true
+          description: "Key of Collection"
+          schema:
+            type: string
+      requestBody:
+        description: "Add Group request"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddGroupToCollectionRequest"
+      responses:
+        "200":
+          description: Empty response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Empty"
 components:
   schemas:
     Empty:
@@ -754,7 +1186,42 @@ components:
     #         modifiedAt:
     #           type: string
     #           format: date-time
+    CreateUserToken:
+      type: object
+      required:
+        - key
+      properties:
+        key:
+          type: string
+        expirationMinues:
+          type: number
+    UserCredentials:
+      type: object
+      properties:
+        userKey: 
+          type: string
+        bearerToken: 
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
     CreateUser:
+      type: object
+      required:
+        - key
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        metadata:
+          type: object
+    CreateCollection:
       type: object
       required:
         - key
@@ -775,6 +1242,31 @@ components:
         userKey:
           type: string
         accessLevel:
+          type: string
+    AddUserToCollectionRequest:
+      type: object
+      required:
+        - userKey
+      properties:
+        userKey:
+          type: string
+        accessLevel:
+          type: string
+    AddGroupToCollectionRequest:
+      type: object
+      required:
+        - groupKey
+      properties:
+        groupKey:
+          type: string
+        accessLevel:
+          type: string
+    AddFileToCollectionRequest:
+      type: object
+      required:
+        - fileKey
+      properties:
+        fileKey:
           type: string
     AddGroupToFileRequest:
       type: object
@@ -812,7 +1304,24 @@ components:
           type: string
         metadata:
           type: object
+    UpdateCollection:
+      type: object
+      required:
+        - key
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        metadata:
+          type: object
     FindUserRequest:
+      type: array
+      items:
+        $ref: "#/components/schemas/Query"
+    FindCollectionRequest:
       type: array
       items:
         $ref: "#/components/schemas/Query"
@@ -968,6 +1477,10 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/FileVersion"
+    ListOfFiles:
+      type: array
+      items:
+        $ref: "#/components/schemas/File"
     RetentionPolicy:
       type: object
       properties:
@@ -1016,6 +1529,17 @@ components:
         modifiedAt:
           type: string
           format: date-time
+    CollectionItems:
+      type: object
+      properties:
+        childCollections:
+          type: array
+          items:
+            $ref: "#/components/schemas/Collection"
+        files:
+          type: array
+          items:
+              $ref: "#/components/schemas/File"
     ListOfCollections:
       type: array
       items:
