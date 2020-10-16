@@ -1383,32 +1383,32 @@ paths:
                 $ref: "#/components/schemas/Empty"
   "/groups/{key}/users/{userKey}":
     put:
-        summary: Add a User to a Group
-        security:
-          - AdminApiKeyAuth: []
-        operationId: addUserToGroup
-        tags:
-          - Group
-        parameters:
-          - name: key
-            in: path
-            required: true
-            description: "Key of Group"
-            schema:
-              type: string
-          - name: userKey
-            in: path
-            required: true
-            description: "Key of User to add to Group"
-            schema:
-              type: string
-        responses:
-          "200":
-            description: Empty response
-            content:
-              application/json:
-                schema:
-                  $ref: "#/components/schemas/Empty"
+      summary: Add a User to a Group
+      security:
+        - AdminApiKeyAuth: []
+      operationId: addUserToGroup
+      tags:
+        - Group
+      parameters:
+        - name: key
+          in: path
+          required: true
+          description: "Key of Group"
+          schema:
+            type: string
+        - name: userKey
+          in: path
+          required: true
+          description: "Key of User to add to Group"
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Empty response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Empty"
   "/groups":
     get:
       summary: Get all Groups
@@ -1467,6 +1467,188 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ListOfGroups"
+  "/legalholds":
+    post:
+      summary: Create a Legal Hold
+      security:
+        - AdminApiKeyAuth: []
+      operationId: createLegalHold
+      tags:
+        - Legal Hold
+      requestBody:
+        description: "Legal Hold information"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateLegalHold"
+      responses:
+        "201":
+          description: A Legal Hold object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LegalHold"
+  "/legalholds/{key}":
+    get:
+      summary: Get a Legal Hold's Info
+      security:
+        - AdminApiKeyAuth: []
+      operationId: getLegalHold
+      tags:
+        - Legal Hold
+      parameters:
+        - name: key
+          in: path
+          required: true
+          description: "Key of Legal Hold to get info"
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A Legal Hold object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LegalHold"
+  "/retentionpolicies":
+    get:
+      summary: Get all Retention Policies
+      security:
+        - AdminApiKeyAuth: []
+      operationId: getAllRetentionPolicies
+      tags:
+        - Retention Policy
+      responses:
+        "200":
+          description: A list of Retention Policy objects
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListOfRetentionPolicies"
+    post:
+      summary: Create a Retention Policy
+      security:
+        - AdminApiKeyAuth: []
+      operationId: createRetentionPolicy
+      tags:
+        - Retention Policy
+      requestBody:
+        description: "Retention Policy information"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateRetentionPolicy"
+      responses:
+        "201":
+          description: A Retention Policy object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RetentionPolicy"
+  "/retentionpolicies/{key}":
+    get:
+      summary: Get a Retention Policy's Info
+      security:
+        - AdminApiKeyAuth: []
+      operationId: getRetentionPolicy
+      tags:
+        - Retention Policy
+      parameters:
+        - name: key
+          in: path
+          required: true
+          description: "Key of Retention Policy to get info"
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A Retention Policy object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RetentionPolicy"
+    put:
+      summary: Update a Retention Policy
+      security:
+        - AdminApiKeyAuth: []
+      operationId: updateRetentionPolicy
+      tags:
+        - Retention Policy
+      parameters:
+        - name: key
+          in: path
+          required: true
+          description: "Key of Retention Policy to update"
+          schema:
+            type: string
+      requestBody:
+        description: "RetentionPolicy information"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateRetentionPolicy"
+      responses:
+        "200":
+          description: A Retention Policy object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RetentionPolicy"
+  "/retentionpolicies/find":
+    post:
+      summary: Find a Retention Policy
+      security:
+        - AdminApiKeyAuth: []
+      operationId: findRetentionPolicy
+      tags:
+        - Retention Policy
+      requestBody:
+        description: "Retention Policy query"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FindRetentionPolicyRequest"
+      responses:
+        "200":
+          description: A list of Retention Policy objects
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListOfRetentionPolicies"
+  "/admin/database/init":
+    post:
+      summary: Init the Hiarc database
+      security:
+        - AdminApiKeyAuth: []
+      operationId: initDB
+      tags:
+        - Admin
+      responses:
+        "201":
+          description: Empty response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Empty"
+  "/admin/database/reset":
+    put:
+      summary: Reset the Hiarc database
+      security:
+        - AdminApiKeyAuth: []
+      operationId: resetDB
+      tags:
+        - Admin
+      responses:
+        "200":
+          description: Empty response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Empty"
 components:
   schemas:
     Empty:
@@ -1529,6 +1711,35 @@ components:
       properties:
         key:
           type: string
+        name:
+          type: string
+        description:
+          type: string
+        metadata:
+          type: object
+    CreateLegalHold:
+      type: object
+      required:
+        - key
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        metadata:
+          type: object
+    CreateRetentionPolicy:
+      type: object
+      required:
+        - key
+        - seconds
+      properties:
+        key:
+          type: string
+        seconds:
+          type: integer
         name:
           type: string
         description:
@@ -1644,6 +1855,21 @@ components:
           type: string
         metadata:
           type: object
+    UpdateRetentionPolicy:
+      type: object
+      required:
+        - key
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        metadata:
+          type: object
+        seconds:
+          type: integer
     UpdateGroup:
       type: object
       required:
@@ -1687,6 +1913,10 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/Query"
+    FindRetentionPolicyRequest:
+      type: array
+      items:
+        $ref: "#/components/schemas/Query"
     FindGroupRequest:
       type: array
       items:
@@ -1708,7 +1938,7 @@ components:
             type: string
     AllowedFiles:
       type: array
-      items: 
+      items:
         type: string
     Query:
       type: object
@@ -1749,6 +1979,27 @@ components:
           type: string
           format: binary
     User:
+      type: object
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        metadata:
+          type: object
+        type:
+          type: string
+        createdBy:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        modifiedAt:
+          type: string
+          format: date-time
+    LegalHold:
       type: object
       properties:
         key:
