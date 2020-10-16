@@ -309,6 +309,34 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Empty"
+  "/files/allow":
+    post:
+      summary: Filter a list of File keys that a User can access
+      security:
+        - AdminApiKeyAuth: []
+      operationId: filterAllowedFiles
+      tags:
+        - Files
+      parameters:
+        - name: X-Hiarc-User-Key
+          in: header
+          description: "Optional key of user to impersonate"
+          schema:
+            type: string
+      requestBody:
+        description: "File key list"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AllowedFilesRequest"
+      responses:
+        "200":
+          description: A list of File keys
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AllowedFiles"
   "/files/{key}/attach":
     put:
       summary: Attach to an existing File
@@ -1015,40 +1043,40 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ListOfCollections"
-  "/collections/{key}/files/{fileKey}":
-    delete:
-      summary: Remove a File from a Collection
-      security:
-        - AdminApiKeyAuth: []
-        - JWTBearerAuth: []
-      operationId: removeFileFromCollection
-      tags:
-        - Collection
-      parameters:
-        - name: X-Hiarc-User-Key
-          in: header
-          description: "Optional key of user to impersonate"
-          schema:
-            type: string
-        - name: key
-          in: path
-          required: true
-          description: "Key of Collection"
-          schema:
-            type: string
-        - name: fileKey
-          in: path
-          required: true
-          description: "Key of File to remove from Collection"
-          schema:
-            type: string
-      responses:
-        "200":
-          description: Empty response
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Empty"
+  # "/collections/{key}/files/{fileKey}":
+  #   delete:
+  #     summary: Remove a File from a Collection
+  #     security:
+  #       - AdminApiKeyAuth: []
+  #       - JWTBearerAuth: []
+  #     operationId: removeFileFromCollection
+  #     tags:
+  #       - Collection
+  #     parameters:
+  #       - name: X-Hiarc-User-Key
+  #         in: header
+  #         description: "Optional key of user to impersonate"
+  #         schema:
+  #           type: string
+  #       - name: key
+  #         in: path
+  #         required: true
+  #         description: "Key of Collection"
+  #         schema:
+  #           type: string
+  #       - name: fileKey
+  #         in: path
+  #         required: true
+  #         description: "Key of File to remove from Collection"
+  #         schema:
+  #           type: string
+  #     responses:
+  #       "200":
+  #         description: Empty response
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: "#/components/schemas/Empty"
   "/collections/{key}/children/{childKey}":
     put:
       summary: Add a child item to a Collection
@@ -1282,6 +1310,163 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ListOfClassifications"
+  "/groups/{key}":
+    get:
+      summary: Get a Group's Info
+      security:
+        - AdminApiKeyAuth: []
+      operationId: getGroup
+      tags:
+        - Group
+      parameters:
+        - name: key
+          in: path
+          required: true
+          description: "Key of Group to get info"
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A Group object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Group"
+    put:
+      summary: Update a Group
+      security:
+        - AdminApiKeyAuth: []
+      operationId: updateGroup
+      tags:
+        - Group
+      parameters:
+        - name: key
+          in: path
+          required: true
+          description: "Key of Group to update"
+          schema:
+            type: string
+      requestBody:
+        description: "Group information"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateGroup"
+      responses:
+        "200":
+          description: A Group object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Group"
+    delete:
+      summary: Delete a Group
+      security:
+        - AdminApiKeyAuth: []
+      operationId: deleteGroup
+      tags:
+        - Group
+      parameters:
+        - name: key
+          in: path
+          required: true
+          description: "Key of Group to delete"
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Empty response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Empty"
+  "/groups/{key}/users/{userKey}":
+    put:
+        summary: Add a User to a Group
+        security:
+          - AdminApiKeyAuth: []
+        operationId: addUserToGroup
+        tags:
+          - Group
+        parameters:
+          - name: key
+            in: path
+            required: true
+            description: "Key of Group"
+            schema:
+              type: string
+          - name: userKey
+            in: path
+            required: true
+            description: "Key of User to add to Group"
+            schema:
+              type: string
+        responses:
+          "200":
+            description: Empty response
+            content:
+              application/json:
+                schema:
+                  $ref: "#/components/schemas/Empty"
+  "/groups":
+    get:
+      summary: Get all Groups
+      security:
+        - AdminApiKeyAuth: []
+      operationId: getAllGroup
+      tags:
+        - Group
+      responses:
+        "200":
+          description: A list of Group objects
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListOfGroups"
+    post:
+      summary: Create a Group
+      security:
+        - AdminApiKeyAuth: []
+      operationId: createGroup
+      tags:
+        - Group
+      requestBody:
+        description: "Group information"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateGroup"
+      responses:
+        "201":
+          description: A Group object
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Group"
+  "/groups/find":
+    post:
+      summary: Find a Group
+      security:
+        - AdminApiKeyAuth: []
+      operationId: findGroup
+      tags:
+        - Group
+      requestBody:
+        description: "Group query"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FindGroupRequest"
+      responses:
+        "200":
+          description: A list of Group objects
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListOfGroups"
 components:
   schemas:
     Empty:
@@ -1338,6 +1523,19 @@ components:
           type: string
           format: date-time
     CreateUser:
+      type: object
+      required:
+        - key
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        metadata:
+          type: object
+    CreateGroup:
       type: object
       required:
         - key
@@ -1446,6 +1644,19 @@ components:
           type: string
         metadata:
           type: object
+    UpdateGroup:
+      type: object
+      required:
+        - key
+      properties:
+        key:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        metadata:
+          type: object
     UpdateCollection:
       type: object
       required:
@@ -1476,6 +1687,10 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/Query"
+    FindGroupRequest:
+      type: array
+      items:
+        $ref: "#/components/schemas/Query"
     FindCollectionRequest:
       type: array
       items:
@@ -1484,6 +1699,17 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/Query"
+    AllowedFilesRequest:
+      type: object
+      properties:
+        keys:
+          type: array
+          items:
+            type: string
+    AllowedFiles:
+      type: array
+      items: 
+        type: string
     Query:
       type: object
       additionalProperties:
