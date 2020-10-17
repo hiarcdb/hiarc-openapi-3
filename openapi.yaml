@@ -129,6 +129,11 @@ paths:
       operationId: getCurrentUser
       tags:
         - User
+      parameters:
+        - in: header
+          name: X-Hiarc-User-Key
+          schema:
+            type: string
       responses:
         "200":
           description: A User object
@@ -168,6 +173,10 @@ paths:
         - User
         - Groups
       parameters:
+        - in: header
+          name: X-Hiarc-User-Key
+          schema:
+            type: string
         - name: key
           in: path
           required: true
@@ -188,6 +197,11 @@ paths:
         - AdminApiKeyAuth: []
         - JWTBearerAuth: []
       operationId: getGroupsForCurrentUser
+      parameters:
+        - in: header
+          name: X-Hiarc-User-Key
+          schema:
+            type: string
       tags:
         - User
         - Group
@@ -218,7 +232,13 @@ paths:
         content:
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/CreateFile"
+              type: object
+              properties:
+                  request:
+                    type: string
+                  file:
+                    type: string
+                    format: binary
       responses:
         "201":
           description: A File object
@@ -274,7 +294,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UpdateFile"
+              $ref: "#/components/schemas/UpdateFileRequest"
       responses:
         "200":
           description: A File object
@@ -363,7 +383,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/AttachToFile"
+              $ref: "#/components/schemas/AttachToExistingFileRequest"
       responses:
         "201":
           description: A File object
@@ -397,7 +417,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CopyFile"
+              $ref: "#/components/schemas/CopyFileRequest"
       responses:
         "201":
           description: A File object
@@ -458,7 +478,13 @@ paths:
         content:
           multipart/form-data:
             schema:
-              $ref: "#/components/schemas/AddFileVersion"
+              type: object
+              properties:
+                  request:
+                    type: string
+                  file:
+                    type: string
+                    format: binary
       responses:
         "201":
           description: A File object
@@ -605,14 +631,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateDirectUploadUrl"
+              $ref: "#/components/schemas/CreateDirectUploadUrlRequest"
       responses:
         "200":
           description: A direct upload object
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/DirectUploadUrl"
+                $ref: "#/components/schemas/FileDirectUpload"
   "/files/{key}/directdownloadurl":
     get:
       summary: Get a direct download URL to a File
@@ -646,7 +672,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/DirectDownloadUrl"
+                $ref: "#/components/schemas/FileDirectDownload"
   "/files/{key}/users":
     put:
       summary: Give a user access to a File
@@ -825,7 +851,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UpdateCollection"
+              $ref: "#/components/schemas/UpdateCollectionRequest"
       responses:
         "200":
           description: A Collection object
@@ -874,7 +900,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateCollection"
+              $ref: "#/components/schemas/CreateCollectionRequest"
       responses:
         "201":
           description: A Collection object
@@ -1035,7 +1061,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/FindCollectionRequest"
+              $ref: "#/components/schemas/FindCollectionsRequest"
       responses:
         "200":
           description: A list of Collection objects
@@ -1352,7 +1378,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UpdateGroup"
+              $ref: "#/components/schemas/UpdateGroupRequest"
       responses:
         "200":
           description: A Group object
@@ -1414,7 +1440,7 @@ paths:
       summary: Get all Groups
       security:
         - AdminApiKeyAuth: []
-      operationId: getAllGroup
+      operationId: getAllGroups
       tags:
         - Group
       responses:
@@ -1459,7 +1485,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/FindGroupRequest"
+              $ref: "#/components/schemas/FindGroupsRequest"
       responses:
         "200":
           description: A list of Group objects
@@ -1659,7 +1685,9 @@ components:
       discriminator:
         propertyName: type
         mapping:
-            user: '#/components/schemas/User'
+          user: "#/components/schemas/User"
+          group: "#/components/schemas/Group"
+          file: "#/components/schemas/File"
       properties:
         key:
           type: string
@@ -1671,6 +1699,8 @@ components:
           type: string
         metadata:
           type: object
+          additionalProperties:
+              type: object
         createdBy:
           type: string
         createdAt:
@@ -1684,8 +1714,13 @@ components:
       discriminator:
         propertyName: key
         mapping:
-            user: '#/components/schemas/CreateUserRequest'
-            group: '#/components/schemas/CreateGroupRequest'
+          createUser: "#/components/schemas/CreateUserRequest"
+          updateUser: "#/components/schemas/UpdateUserRequest"
+          createGroup: "#/components/schemas/CreateGroupRequest"
+          updateGroup: "#/components/schemas/UpdateGroupRequest"
+          createCollection: "#/components/schemas/CreateCollectionRequest"
+          updateCollection: "#/components/schemas/UpdateCollectionRequest"
+          createFile: "#/components/schemas/CreateFileRequest"
       # Adding required seems to break object initializers in C#
       # But it adds in a check to the constructor method for the property
       # required:
@@ -1699,23 +1734,27 @@ components:
           type: string
         metadata:
           type: object
+          additionalProperties:
+              type: object
     FindEntityRequest:
       type: object
       discriminator:
         propertyName: query
         mapping:
-            findUser: '#/components/schemas/FindUsersRequest'
+          findUser: "#/components/schemas/FindUsersRequest"
+          findGroup: "#/components/schemas/FindGroupsRequest"
+          findCollection: "#/components/schemas/FindCollectionsRequest"
       properties:
-          query:
-            type: array
-            items:
+        query:
+          type: array
+          items:
+            type: object
+            additionalProperties:
               type: object
-              additionalProperties:
-                type: object
     CreateUserTokenRequest:
       type: object
-      required:
-        - key
+      # required:
+      #   - key
       properties:
         key:
           type: string
@@ -1723,9 +1762,9 @@ components:
           type: number
     CreateUserRequest:
       allOf:
-      - $ref: '#/components/schemas/CreateOrUpdateEntityRequest'
-      - type: object
-    CreateDirectUploadUrl:
+        - $ref: "#/components/schemas/CreateOrUpdateEntityRequest"
+        - type: object
+    CreateDirectUploadUrlRequest:
       type: object
       properties:
         storageService:
@@ -1761,21 +1800,12 @@ components:
           type: object
     CreateGroupRequest:
       allOf:
-      - $ref: '#/components/schemas/CreateOrUpdateEntityRequest'
-      - type: object
-    CreateCollection:
-      type: object
-      required:
-        - key
-      properties:
-        key:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        metadata:
-          type: object
+        - $ref: "#/components/schemas/CreateOrUpdateEntityRequest"
+        - type: object
+    CreateCollectionRequest:
+      allOf:
+        - $ref: "#/components/schemas/CreateOrUpdateEntityRequest"
+        - type: object
     CreateClassification:
       type: object
       required:
@@ -1789,24 +1819,13 @@ components:
           type: string
         metadata:
           type: object
-    CreateFile:
-      type: object
-      required:
-        - key
-      properties:
-        key:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        metadata:
-          type: object
-        StorageService:
-          type: string
-        file:
-          type: string
-          format: binary
+    CreateFileRequest:
+      allOf:
+        - $ref: "#/components/schemas/CreateOrUpdateEntityRequest"
+        - type: object
+          properties:
+            storageService:
+              type: string
     AddUserToFileRequest:
       type: object
       required:
@@ -1859,23 +1878,25 @@ components:
           type: string
     AddClassificationToFileRequest:
       type: object
-      required:
-        - classificationKey
+      # required:
+      #   - classificationKey
       properties:
         classificationKey:
           type: string
-    AddFileVersion:
+    AddVersionToFileRequest:
       type: object
       properties:
-        StorageService:
+        key:
           type: string
-        file:
+        storageService:
           type: string
-          format: binary
+        # file:
+        #   type: string
+        #   format: binary
     UpdateUserRequest:
       allOf:
-      - $ref: '#/components/schemas/CreateOrUpdateEntityRequest'
-      - type: object
+        - $ref: "#/components/schemas/CreateOrUpdateEntityRequest"
+        - type: object
     UpdateRetentionPolicy:
       type: object
       required:
@@ -1891,32 +1912,14 @@ components:
           type: object
         seconds:
           type: integer
-    UpdateGroup:
-      type: object
-      required:
-        - key
-      properties:
-        key:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        metadata:
-          type: object
-    UpdateCollection:
-      type: object
-      required:
-        - key
-      properties:
-        key:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        metadata:
-          type: object
+    UpdateGroupRequest:
+      allOf:
+        - $ref: "#/components/schemas/CreateOrUpdateEntityRequest"
+        - type: object
+    UpdateCollectionRequest:
+      allOf:
+        - $ref: "#/components/schemas/CreateOrUpdateEntityRequest"
+        - type: object
     UpdateClassification:
       type: object
       required:
@@ -1930,10 +1933,10 @@ components:
           type: string
         metadata:
           type: object
-    UpdateFile:
+    UpdateFileRequest:
       type: object
-      required:
-        - key
+      # required:
+      #   - key
       properties:
         key:
           type: string
@@ -1945,8 +1948,8 @@ components:
           type: object
     FindUsersRequest:
       allOf:
-      - $ref: '#/components/schemas/FindEntityRequest'
-      - type: object
+        - $ref: "#/components/schemas/FindEntityRequest"
+        - type: object
       # type: object
       # properties:
       #     query:
@@ -1958,39 +1961,29 @@ components:
     FindRetentionPolicyRequest:
       type: object
       properties:
-          query:
-            type: array
-            items:
-              type: object
-              additionalProperties:
-                type: string
-    FindGroupRequest:
-      type: object
-      properties:
-          query:
-            type: array
-            items:
-              type: object
-              additionalProperties:
-                type: string
-    FindCollectionRequest:
-      type: object
-      properties:
-          query:
-            type: array
-            items:
-              type: object
-              additionalProperties:
-                type: string
+        query:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: string
+    FindGroupsRequest:
+      allOf:
+        - $ref: "#/components/schemas/FindEntityRequest"
+        - type: object
+    FindCollectionsRequest:
+      allOf:
+        - $ref: "#/components/schemas/FindEntityRequest"
+        - type: object
     FindClassificationRequest:
       type: object
       properties:
-          query:
-            type: array
-            items:
-              type: object
-              additionalProperties:
-                type: string
+        query:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: string
     AllowedFilesRequest:
       type: object
       properties:
@@ -2002,7 +1995,7 @@ components:
       type: array
       items:
         type: string
-    AttachToFile:
+    AttachToExistingFileRequest:
       type: object
       properties:
         name:
@@ -2011,7 +2004,7 @@ components:
           type: string
         storageId:
           type: string
-    CopyFile:
+    CopyFileRequest:
       type: object
       properties:
         key:
@@ -2020,8 +2013,8 @@ components:
           type: string
     User:
       allOf:
-      - $ref: '#/components/schemas/Entity'
-      - type: object
+        - $ref: "#/components/schemas/Entity"
+        - type: object
     LegalHold:
       type: object
       properties:
@@ -2065,49 +2058,16 @@ components:
           type: string
           format: date-time
     Group:
-      type: object
-      properties:
-        key:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        metadata:
-          type: object
-        type:
-          type: string
-        createdBy:
-          type: string
-        createdAt:
-          type: string
-          format: date-time
-        modifiedAt:
-          type: string
-          format: date-time
+      allOf:
+      - $ref: "#/components/schemas/Entity"
+      - type: object
     File:
-      type: object
-      properties:
-        key:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        metadata:
-          type: object
-        type:
-          type: string
-        createdBy:
-          type: string
-        createdAt:
-          type: string
-          format: date-time
-        modifiedAt:
-          type: string
-          format: date-time
-        versionCount:
-          type: number
+      allOf:
+      - $ref: "#/components/schemas/Entity"
+      - type: object
+        properties:
+          versionCount:
+            type: number
     FileVersion:
       type: object
       properties:
@@ -2120,7 +2080,7 @@ components:
           type: string
         storageId:
           type: string
-    DirectUploadUrl:
+    FileDirectUpload:
       type: object
       properties:
         directUploadUrl:
@@ -2132,7 +2092,7 @@ components:
         expiresAt:
           type: string
           format: date-time
-    DirectDownloadUrl:
+    FileDirectDownload:
       type: object
       properties:
         key:
@@ -2165,6 +2125,17 @@ components:
           format: date-time
         seconds:
           type: integer
+    RetentionPolicyApplication:
+      type: object
+      properties:
+        retentionPolicy:
+          $ref: "#/components/schemas/RetentionPolicy"
+        appliedAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
     Collection:
       type: object
       properties:
