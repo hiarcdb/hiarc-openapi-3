@@ -329,7 +329,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Empty"
-  "/files/allow":
+  "/files/allowed":
     post:
       summary: Filter a list of File keys that a User can access
       security:
@@ -617,6 +617,11 @@ paths:
         - AdminApiKeyAuth: []
       operationId: createDirectUploadUrl
       parameters:
+        - name: X-Hiarc-User-Key
+          in: header
+          description: "Optional key of user to impersonate"
+          schema:
+            type: string
         - name: expiresInSeconds
           in: query
           required: false
@@ -662,10 +667,10 @@ paths:
             type: string
         - name: expiresInSeconds
           in: query
+          description: When access to the url should expire
           required: false
           schema:
             type: integer
-          description: When access to the url should expire
       responses:
         "200":
           description: A direct download URL object
@@ -894,6 +899,12 @@ paths:
       operationId: createCollection
       tags:
         - Collection
+      parameters:
+        - name: X-Hiarc-User-Key
+          in: header
+          description: "Optional key of user to impersonate"
+          schema:
+            type: string
       requestBody:
         description: "Collection information"
         required: true
@@ -912,9 +923,15 @@ paths:
       summary: Get all Collections
       security:
         - AdminApiKeyAuth: []
-      operationId: getAllCollection
+      operationId: getAllCollections
       tags:
         - Collection
+      parameters:
+        - name: X-Hiarc-User-Key
+          in: header
+          description: "Optional key of user to impersonate"
+          schema:
+            type: string
       responses:
         "200":
           description: A list of Collection objects
@@ -1069,40 +1086,40 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ListOfCollections"
-  # "/collections/{key}/files/{fileKey}":
-  #   delete:
-  #     summary: Remove a File from a Collection
-  #     security:
-  #       - AdminApiKeyAuth: []
-  #       - JWTBearerAuth: []
-  #     operationId: removeFileFromCollection
-  #     tags:
-  #       - Collection
-  #     parameters:
-  #       - name: X-Hiarc-User-Key
-  #         in: header
-  #         description: "Optional key of user to impersonate"
-  #         schema:
-  #           type: string
-  #       - name: key
-  #         in: path
-  #         required: true
-  #         description: "Key of Collection"
-  #         schema:
-  #           type: string
-  #       - name: fileKey
-  #         in: path
-  #         required: true
-  #         description: "Key of File to remove from Collection"
-  #         schema:
-  #           type: string
-  #     responses:
-  #       "200":
-  #         description: Empty response
-  #         content:
-  #           application/json:
-  #             schema:
-  #               $ref: "#/components/schemas/Empty"
+  "/collections/{key}/files/{fileKey}":
+    delete:
+      summary: Remove a File from a Collection
+      security:
+        - AdminApiKeyAuth: []
+        - JWTBearerAuth: []
+      operationId: removeFileFromCollection
+      tags:
+        - Collection
+      parameters:
+        - name: X-Hiarc-User-Key
+          in: header
+          description: "Optional key of user to impersonate"
+          schema:
+            type: string
+        - name: key
+          in: path
+          required: true
+          description: "Key of Collection"
+          schema:
+            type: string
+        - name: fileKey
+          in: path
+          required: true
+          description: "Key of File to remove from Collection"
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Empty response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Empty"
   "/collections/{key}/children/{childKey}":
     put:
       summary: Add a child item to a Collection
@@ -1216,6 +1233,11 @@ paths:
       tags:
         - Classification
       parameters:
+        - name: X-Hiarc-User-Key
+          in: header
+          description: "Optional key of user to impersonate"
+          schema:
+            type: string
         - name: key
           in: path
           required: true
@@ -1237,6 +1259,11 @@ paths:
       tags:
         - Classification
       parameters:
+        - name: X-Hiarc-User-Key
+          in: header
+          description: "Optional key of user to impersonate"
+          schema:
+            type: string
         - name: key
           in: path
           required: true
@@ -1249,7 +1276,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UpdateClassification"
+              $ref: "#/components/schemas/UpdateClassificationRequest"
       responses:
         "200":
           description: A Classification object
@@ -1265,6 +1292,11 @@ paths:
       tags:
         - Classification
       parameters:
+        - name: X-Hiarc-User-Key
+          in: header
+          description: "Optional key of user to impersonate"
+          schema:
+            type: string
         - name: key
           in: path
           required: true
@@ -1286,6 +1318,12 @@ paths:
       operationId: getAllClassifications
       tags:
         - Classification
+      parameters:
+        - name: X-Hiarc-User-Key
+          in: header
+          description: "Optional key of user to impersonate"
+          schema:
+            type: string
       responses:
         "200":
           description: A list of Classification objects
@@ -1300,13 +1338,19 @@ paths:
       operationId: createClassification
       tags:
         - Classification
+      parameters:
+        - name: X-Hiarc-User-Key
+          in: header
+          description: "Optional key of user to impersonate"
+          schema:
+            type: string
       requestBody:
         description: "Classification information"
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateClassification"
+              $ref: "#/components/schemas/CreateClassificationRequest"
       responses:
         "201":
           description: A Classification object
@@ -1322,13 +1366,19 @@ paths:
       operationId: findClassification
       tags:
         - Classification
+      parameters:
+        - name: X-Hiarc-User-Key
+          in: header
+          description: "Optional key of user to impersonate"
+          schema:
+            type: string
       requestBody:
         description: "Classification query"
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/FindClassificationRequest"
+              $ref: "#/components/schemas/FindClassificationsRequest"
       responses:
         "200":
           description: A list of Classification objects
@@ -1688,6 +1738,8 @@ components:
           user: "#/components/schemas/User"
           group: "#/components/schemas/Group"
           file: "#/components/schemas/File"
+          classification: "#/components/schemas/Classification"
+          collection: "#/components/schemas/Collection"
       properties:
         key:
           type: string
@@ -1721,6 +1773,8 @@ components:
           createCollection: "#/components/schemas/CreateCollectionRequest"
           updateCollection: "#/components/schemas/UpdateCollectionRequest"
           createFile: "#/components/schemas/CreateFileRequest"
+          createClassification: "#/components/schemas/CreateClassificationRequest"
+          updateClassification: "#/components/schemas/UpdateClassificationRequest"
       # Adding required seems to break object initializers in C#
       # But it adds in a check to the constructor method for the property
       # required:
@@ -1744,6 +1798,7 @@ components:
           findUser: "#/components/schemas/FindUsersRequest"
           findGroup: "#/components/schemas/FindGroupsRequest"
           findCollection: "#/components/schemas/FindCollectionsRequest"
+          findClassification: "#/components/schemas/FindClassificationsRequest"
       properties:
         query:
           type: array
@@ -1806,19 +1861,10 @@ components:
       allOf:
         - $ref: "#/components/schemas/CreateOrUpdateEntityRequest"
         - type: object
-    CreateClassification:
-      type: object
-      required:
-        - key
-      properties:
-        key:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        metadata:
-          type: object
+    CreateClassificationRequest:
+      allOf:
+        - $ref: "#/components/schemas/CreateOrUpdateEntityRequest"
+        - type: object
     CreateFileRequest:
       allOf:
         - $ref: "#/components/schemas/CreateOrUpdateEntityRequest"
@@ -1828,51 +1874,51 @@ components:
               type: string
     AddUserToFileRequest:
       type: object
-      required:
-        - userKey
+      # required:
+      #   - userKey
       properties:
         userKey:
           type: string
         accessLevel:
-          type: string
+          $ref: '#/components/schemas/AccessLevel'
     AddUserToCollectionRequest:
       type: object
-      required:
-        - userKey
+      # required:
+      #   - userKey
       properties:
         userKey:
           type: string
         accessLevel:
-          type: string
+          $ref: '#/components/schemas/AccessLevel'
     AddGroupToCollectionRequest:
       type: object
-      required:
-        - groupKey
+      # required:
+      #   - groupKey
       properties:
         groupKey:
           type: string
         accessLevel:
-          type: string
+          $ref: '#/components/schemas/AccessLevel'
     AddFileToCollectionRequest:
       type: object
-      required:
-        - fileKey
+      # required:
+      #   - fileKey
       properties:
         fileKey:
           type: string
     AddGroupToFileRequest:
       type: object
-      required:
-        - groupKey
+      # required:
+      #   - groupKey
       properties:
         groupKey:
           type: string
         accessLevel:
-          type: string
+          $ref: '#/components/schemas/AccessLevel'
     AddRetentionPolicyToFileRequest:
       type: object
-      required:
-        - retentionPolicyKey
+      # required:
+      #   - retentionPolicyKey
       properties:
         retentionPolicyKey:
           type: string
@@ -1899,8 +1945,8 @@ components:
         - type: object
     UpdateRetentionPolicy:
       type: object
-      required:
-        - key
+      # required:
+      #   - key
       properties:
         key:
           type: string
@@ -1920,19 +1966,10 @@ components:
       allOf:
         - $ref: "#/components/schemas/CreateOrUpdateEntityRequest"
         - type: object
-    UpdateClassification:
-      type: object
-      required:
-        - key
-      properties:
-        key:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        metadata:
-          type: object
+    UpdateClassificationRequest:
+      allOf:
+        - $ref: "#/components/schemas/CreateOrUpdateEntityRequest"
+        - type: object
     UpdateFileRequest:
       type: object
       # required:
@@ -1975,15 +2012,10 @@ components:
       allOf:
         - $ref: "#/components/schemas/FindEntityRequest"
         - type: object
-    FindClassificationRequest:
-      type: object
-      properties:
-        query:
-          type: array
-          items:
-            type: object
-            additionalProperties:
-              type: string
+    FindClassificationsRequest:
+      allOf:
+        - $ref: "#/components/schemas/FindEntityRequest"
+        - type: object
     AllowedFilesRequest:
       type: object
       properties:
@@ -2037,26 +2069,9 @@ components:
           type: string
           format: date-time
     Classification:
-      type: object
-      properties:
-        key:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        metadata:
-          type: object
-        type:
-          type: string
-        createdBy:
-          type: string
-        createdAt:
-          type: string
-          format: date-time
-        modifiedAt:
-          type: string
-          format: date-time
+      allOf:
+      - $ref: "#/components/schemas/Entity"
+      - type: object
     Group:
       allOf:
       - $ref: "#/components/schemas/Entity"
@@ -2137,26 +2152,9 @@ components:
           type: string
           format: date-time
     Collection:
-      type: object
-      properties:
-        key:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        metadata:
-          type: object
-        type:
-          type: string
-        createdBy:
-          type: string
-        createdAt:
-          type: string
-          format: date-time
-        modifiedAt:
-          type: string
-          format: date-time
+      allOf:
+      - $ref: "#/components/schemas/Entity"
+      - type: object
     CollectionItems:
       type: object
       properties:
@@ -2181,6 +2179,18 @@ components:
         expiresAt:
           type: string
           format: date-time
+    AccessLevel:
+      type: string
+      enum:
+        - "CO_OWNER"
+        - "READ_WRITE"
+        - "READ_ONLY"
+        - "UPLOAD_ONLY"
+      x-enum-varnames:
+        - "CO_OWNER"
+        - "READ_WRITE"
+        - "READ_ONLY"
+        - "UPLOAD_ONLY"
     ListOfUsers:
       type: array
       items:
