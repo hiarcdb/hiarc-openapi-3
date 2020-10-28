@@ -519,7 +519,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ListOfRetentionPolicies"
+                $ref: "#/components/schemas/ListOfRetentionPolicyApplication"
     put:
       summary: Add a Retention Policy to a File
       security:
@@ -1557,7 +1557,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateLegalHold"
+              $ref: "#/components/schemas/CreateLegalHoldRequest"
       responses:
         "201":
           description: A Legal Hold object
@@ -1615,7 +1615,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateRetentionPolicy"
+              $ref: "#/components/schemas/CreateRetentionPolicyRequest"
       responses:
         "201":
           description: A Retention Policy object
@@ -1665,7 +1665,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UpdateRetentionPolicy"
+              $ref: "#/components/schemas/UpdateRetentionPolicyRequest"
       responses:
         "200":
           description: A Retention Policy object
@@ -1678,7 +1678,7 @@ paths:
       summary: Find a Retention Policy
       security:
         - AdminApiKeyAuth: []
-      operationId: findRetentionPolicy
+      operationId: findRetentionPolicies
       tags:
         - Retention Policy
       requestBody:
@@ -1687,7 +1687,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/FindRetentionPolicyRequest"
+              $ref: "#/components/schemas/FindRetentionPoliciesRequest"
       responses:
         "200":
           description: A list of Retention Policy objects
@@ -1740,6 +1740,8 @@ components:
           file: "#/components/schemas/File"
           classification: "#/components/schemas/Classification"
           collection: "#/components/schemas/Collection"
+          legalHold: "#/components/schemas/LegalHold"
+          retentionPolicy: "#/components/schemas/RetentionPolicy"
       properties:
         key:
           type: string
@@ -1775,6 +1777,9 @@ components:
           createFile: "#/components/schemas/CreateFileRequest"
           createClassification: "#/components/schemas/CreateClassificationRequest"
           updateClassification: "#/components/schemas/UpdateClassificationRequest"
+          createLegalHold: "#/components/schemas/CreateLegalHoldRequest"
+          createRetentionPolicy: "#/components/schemas/CreateRetentionPolicyRequest"
+          updateRetentionPolicy: "#/components/schemas/UpdateRetentionPolicyRequest"
       # Adding required seems to break object initializers in C#
       # But it adds in a check to the constructor method for the property
       # required:
@@ -1799,6 +1804,7 @@ components:
           findGroup: "#/components/schemas/FindGroupsRequest"
           findCollection: "#/components/schemas/FindCollectionsRequest"
           findClassification: "#/components/schemas/FindClassificationsRequest"
+          findRetentionPolicies: "#/components/schemas/FindRetentionPoliciesRequest"
       properties:
         query:
           type: array
@@ -1824,35 +1830,18 @@ components:
       properties:
         storageService:
           type: string
-    CreateLegalHold:
-      type: object
-      required:
-        - key
-      properties:
-        key:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        metadata:
-          type: object
-    CreateRetentionPolicy:
-      type: object
-      required:
-        - key
-        - seconds
-      properties:
-        key:
-          type: string
-        seconds:
-          type: integer
-        name:
-          type: string
-        description:
-          type: string
-        metadata:
-          type: object
+    CreateLegalHoldRequest:
+      allOf:
+        - $ref: "#/components/schemas/CreateOrUpdateEntityRequest"
+        - type: object
+    CreateRetentionPolicyRequest:
+      allOf:
+        - $ref: "#/components/schemas/CreateOrUpdateEntityRequest"
+        - type: object
+          properties:
+            # Cannot create unsigned, must change in SDK manually
+            seconds:
+              type: integer
     CreateGroupRequest:
       allOf:
         - $ref: "#/components/schemas/CreateOrUpdateEntityRequest"
@@ -1943,21 +1932,14 @@ components:
       allOf:
         - $ref: "#/components/schemas/CreateOrUpdateEntityRequest"
         - type: object
-    UpdateRetentionPolicy:
-      type: object
-      # required:
-      #   - key
-      properties:
-        key:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        metadata:
-          type: object
-        seconds:
-          type: integer
+    UpdateRetentionPolicyRequest:
+      allOf:
+        - $ref: "#/components/schemas/CreateOrUpdateEntityRequest"
+        - type: object
+          properties:
+            # Cannot create unsigned, must change in SDK manually
+            seconds:
+              type: integer
     UpdateGroupRequest:
       allOf:
         - $ref: "#/components/schemas/CreateOrUpdateEntityRequest"
@@ -1987,23 +1969,10 @@ components:
       allOf:
         - $ref: "#/components/schemas/FindEntityRequest"
         - type: object
-      # type: object
-      # properties:
-      #     query:
-      #       type: array
-      #       items:
-      #         type: object
-      #         additionalProperties:
-      #           type: string
-    FindRetentionPolicyRequest:
-      type: object
-      properties:
-        query:
-          type: array
-          items:
-            type: object
-            additionalProperties:
-              type: string
+    FindRetentionPoliciesRequest:
+      allOf:
+        - $ref: "#/components/schemas/FindEntityRequest"
+        - type: object
     FindGroupsRequest:
       allOf:
         - $ref: "#/components/schemas/FindEntityRequest"
@@ -2048,26 +2017,9 @@ components:
         - $ref: "#/components/schemas/Entity"
         - type: object
     LegalHold:
-      type: object
-      properties:
-        key:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        metadata:
-          type: object
-        type:
-          type: string
-        createdBy:
-          type: string
-        createdAt:
-          type: string
-          format: date-time
-        modifiedAt:
-          type: string
-          format: date-time
+      allOf:
+        - $ref: "#/components/schemas/Entity"
+        - type: object
     Classification:
       allOf:
       - $ref: "#/components/schemas/Entity"
@@ -2118,28 +2070,13 @@ components:
           type: string
           format: date-time
     RetentionPolicy:
-      type: object
-      properties:
-        key:
-          type: string
-        name:
-          type: string
-        description:
-          type: string
-        metadata:
-          type: object
-        type:
-          type: string
-        createdBy:
-          type: string
-        createdAt:
-          type: string
-          format: date-time
-        modifiedAt:
-          type: string
-          format: date-time
-        seconds:
-          type: integer
+      allOf:
+      - $ref: "#/components/schemas/Entity"
+      - type: object
+        properties:
+          # Cannot create unsigned, must change in SDK manually
+          seconds:
+            type: integer
     RetentionPolicyApplication:
       type: object
       properties:
@@ -2215,6 +2152,10 @@ components:
       type: array
       items:
         $ref: "#/components/schemas/RetentionPolicy"
+    ListOfRetentionPolicyApplication:
+      type: array
+      items:
+        $ref: "#/components/schemas/RetentionPolicyApplication"
     ListOfCollections:
       type: array
       items:
