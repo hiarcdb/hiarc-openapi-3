@@ -1,0 +1,15 @@
+{
+    "apiPackage": "com.hiarcdb.client.api",
+    "artifactId": "hiarcSDK",
+    "artifactDescription": "A Java SDK for interacting with the Hiarc API.",
+    "artifactUrl": "https://github.com/hiarcdb/hiarc-java-sdk",
+    "developerName": "HiarcDB SDK Maintainers",
+    "developerEmail": "sdk@hiarcdb.com",
+    "developerOrganization": "hiarcdb.com",
+    "developerOrganizationUrl": "https://www.hiarcdb.com/",
+    "groupId": "com.hiarcdb",
+    "invokerPackage": "com.hiarcdb.client",
+    "licenseName": "MIT",
+    "licenseUrl": "https://github.com/hiarcdb/hiarc-java-sdk/LICENSE",
+    "modelPackage": "com.hiarcdb.client.model"
+}
